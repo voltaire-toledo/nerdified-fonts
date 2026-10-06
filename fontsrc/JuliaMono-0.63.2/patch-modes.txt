@@ -1,0 +1,3 @@
+# One ZIP for the regular careful build and one for the icon-replacing build.
+auto
+forced

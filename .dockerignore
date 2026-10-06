@@ -1,0 +1,4 @@
+# The project is bind-mounted at run time. The image only needs its Dockerfile;
+# this also keeps local fonts and generated archives out of the build context.
+**
+!Dockerfile

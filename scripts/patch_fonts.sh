@@ -2,7 +2,7 @@
 set -euo pipefail
 script_dir=$(cd "$(dirname "$0")" && pwd)
 repo_dir=$(cd "$script_dir/.." && pwd)
-version= families=() mode=auto install_deps=1 yes=0
+version= families=() mode=auto mode_explicit=0 install_deps=1 yes=0
 usage() {
   echo "Usage: $0 [--version VERSION] [--font FAMILY ... | --all] [--mode auto|normal|mono|forced|forced-mono] [--no-install] [--yes]" >&2
   exit 2
@@ -12,7 +12,7 @@ while (($#)); do
     --version) version=$2; shift 2 ;;
     --font) families+=("$2"); shift 2 ;;
     --all) families=(ALL); shift ;;
-    --mode) mode=$2; shift 2 ;;
+    --mode) mode=$2; mode_explicit=1; shift 2 ;;
     --no-install) install_deps=0; shift ;;
     --yes) yes=1; shift ;;
     -h|--help) usage ;;
@@ -62,7 +62,11 @@ for family in "${families[@]}"; do
 done
 echo "Nerd Fonts version: v$version"
 echo "Selected families: ${families[*]}"
-echo "Patching mode: $mode"
+if ((mode_explicit)); then
+  echo "Patching mode override: $mode"
+else
+  echo 'Patching modes: each family uses fontsrc/FAMILY/patch-modes.txt when present; otherwise auto'
+fi
 if (( ! yes )); then
   if [[ ! -t 0 ]]; then echo 'Use --yes in noninteractive mode' >&2; exit 2; fi
   read -r -p 'Proceed? [y/N] ' answer
@@ -70,12 +74,42 @@ if (( ! yes )); then
 fi
 nerd_dir=$("$script_dir/fetch_nerd_fonts.sh" "$version" "$repo_dir/.cache/nerd-fonts-$version")
 for family in "${families[@]}"; do
-  output="$repo_dir/patched/$family"
-  mkdir -p "$output" "$repo_dir/releases"
-  find "$output" -maxdepth 1 -type f \( -iname '*.ttf' -o -iname '*.otf' \) -delete
-  "$script_dir/build_fonts.sh" --input-dir "$repo_dir/fontsrc/$family" --output-dir "$output" --font-patcher "$nerd_dir/font-patcher" --glyphdir "$nerd_dir/src/glyphs" --mode "$mode"
-  "$script_dir/validate_fonts.sh" "$output"
-  python3 "$script_dir/package_family.py" "$output" "$repo_dir/fontsrc/$family" "$repo_dir/releases/$family-v$version.zip" "$nerd_dir/src/glyphs"
+  modes=()
+  if ((mode_explicit)); then
+    modes=("$mode")
+  elif [[ -f "$repo_dir/fontsrc/$family/patch-modes.txt" ]]; then
+    while IFS= read -r configured_mode || [[ -n "$configured_mode" ]]; do
+      [[ -z "$configured_mode" || "$configured_mode" == \#* ]] && continue
+      case "$configured_mode" in auto|normal|mono|forced|forced-mono) ;; *) echo "Invalid mode '$configured_mode' in $family/patch-modes.txt" >&2; exit 2 ;; esac
+      modes+=("$configured_mode")
+    done < "$repo_dir/fontsrc/$family/patch-modes.txt"
+    ((${#modes[@]})) || { echo "No modes in $family/patch-modes.txt" >&2; exit 2; }
+  else
+    modes=(auto)
+  fi
+  for family_mode in "${modes[@]}"; do
+    case "$family_mode" in
+      auto) output_name=$family ;;
+      normal) suffix=Normal ;;
+      mono) suffix=Mono ;;
+      forced) suffix=Forced ;;
+      forced-mono) suffix=ForcedMono ;;
+    esac
+    if [[ "$family_mode" != auto ]]; then
+      if [[ "$family" =~ ^(.+)-([0-9].*)$ ]]; then
+        output_name="${BASH_REMATCH[1]}${suffix}-${BASH_REMATCH[2]}"
+      else
+        output_name="${family}${suffix}"
+      fi
+    fi
+    output="$repo_dir/patched/$output_name"
+    echo "Building $family in $family_mode mode as $output_name"
+    mkdir -p "$output" "$repo_dir/releases"
+    find "$output" -maxdepth 1 -type f \( -iname '*.ttf' -o -iname '*.otf' \) -delete
+    "$script_dir/build_fonts.sh" --input-dir "$repo_dir/fontsrc/$family" --output-dir "$output" --font-patcher "$nerd_dir/font-patcher" --glyphdir "$nerd_dir/src/glyphs" --mode "$family_mode"
+    "$script_dir/validate_fonts.sh" "$output"
+    python3 "$script_dir/package_family.py" "$output" "$repo_dir/fontsrc/$family" "$repo_dir/releases/$output_name-v$version.zip" "$nerd_dir/src/glyphs"
+  done
 done
 
 echo "Build complete. Retained paths:"

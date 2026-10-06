@@ -4,14 +4,14 @@
 
 A font is a collection of characters and symbols. A **Nerd Font** adds icons used by terminal prompts, file listings, editors, and other developer tools. Patching a font means taking the original font files and adding those icon glyphs. A font **family** is a named collection such as Lekton; a **face** is one weight or style in that family, such as Regular, Bold, or Italic. The patcher processes each face separately.
 
-This repository patches font families placed under `fontsrc/`, validates the patched faces, and creates one ZIP per family. It currently includes JuliaMono and Lekton sources. You can add another family if you have its unpatched TTF or OTF files. Your source files stay in `fontsrc/`; generated fonts go in `patched/`, and family archives go in `releases/`. The project follows Nerd Fonts **patcher** release versions. It does not automatically update the original source fonts to a newer JuliaMono, Lekton, or other family release.
+This repository patches font families placed under `fontsrc/`, validates the patched faces, and creates one ZIP per family **and selected patch mode**. It currently includes JuliaMono and Lekton sources. You can add another family if you have its unpatched TTF or OTF files. Your source files stay in `fontsrc/`; generated fonts go in `patched/`, and family archives go in `releases/`. The project follows Nerd Fonts **patcher** release versions. It does not automatically update the original source fonts to a newer JuliaMono, Lekton, or other family release.
 
 ## How does this repo work
 
-1. The script lists family directories under `fontsrc/` and lets you choose which to patch.
+1. The script lists family directories under `fontsrc/` and lets you choose which to patch. A family can list several modes in `patch-modes.txt`; otherwise it uses `auto`.
 2. It checks the latest stable [Nerd Fonts release](https://github.com/ryanoasis/nerd-fonts/releases), unless you supply a version. It downloads that release's `FontPatcher.zip` into `.cache/nerd-fonts-X.Y.Z/` inside this repo. The archive contains the patcher program and the versioned glyph sources.
-3. FontForge runs the patcher once for every TTF or OTF face in the chosen families. The script enables `--complete` so the patcher adds all available icon sets. By default, `auto` mode chooses single-cell-width icons for fixed-pitch fonts and normal patching for proportional fonts.
-4. The scripts normalize the family and style metadata, validate Private Use Area icon coverage, then produce `patched/FontName/` and `releases/FontName-vX.Y.Z.zip`. The ZIP includes the available source font license and Nerd Fonts glyph notices.
+3. Run the same guided script on a supported host or through Docker Compose. FontForge runs the patcher once for every TTF or OTF face in the chosen families. The script enables `--complete` so the patcher adds all available icon sets. By default, `auto` mode chooses single-cell-width icons for fixed-pitch fonts and normal patching for proportional fonts.
+4. The scripts normalize the family and style metadata, validate Private Use Area icon coverage, then produce `patched/FontName/` and `releases/FontName-vX.Y.Z.zip` for the default mode. Additional modes get their own named directories and ZIPs, such as `JuliaMonoForced-0.63.2-v3.5.1.zip`. Each ZIP includes the available source font license and Nerd Fonts glyph notices.
 5. The [GitHub](.github/workflows/release.yml) or [Forgejo](.forgejo/workflows/release.yml) release workflow can repeat the build for **committed** source families when a new Nerd Fonts version appears.
 
 The directory names have distinct jobs:
@@ -19,6 +19,7 @@ The directory names have distinct jobs:
 | Path | Purpose | Kept after a successful build? |
 | --- | --- | --- |
 | `fontsrc/FontName/` | Original font faces and their license | Yes; your input |
+| `fontsrc/FontName/patch-modes.txt` | Optional list of patch modes to build for that family | Yes; project configuration |
 | `.cache/nerd-fonts-X.Y.Z/` | Downloaded `FontPatcher.zip`, extracted `font-patcher`, and `src/glyphs/` | Yes; reused for that version |
 | `patched/FontName/` | Patched font faces | Yes |
 | `releases/FontName-vX.Y.Z.zip` | One archive per family, including licenses | Yes |
@@ -46,7 +47,7 @@ Nerd Fonts names describe how the added icons use character width. A **cell** is
 
 `NF`, `NFM`, and `NFP` are shorter **name abbreviations**, not separate icon collections or licenses. A font whose original name contains “Mono” is a monospaced **source family**; that word alone does not say which Nerd Fonts patch mode was applied. “Monotype” is not a Nerd Fonts patch variant.
 
-This repo has additional patch policies. Its `normal` mode uses upstream `--careful` to preserve existing glyphs at conflicting codepoints; `mono` adds `--mono`. Its project-specific `forced` and `forced-mono` modes allow replacement at conflicts. `auto` chooses `mono` or `normal` per source face. The wrapper currently has no `Propo` mode. Its name normalizer reports both `normal` and `mono` as `SourceFamily Nerd Font`, and both forced modes as `SourceFamilyForced Nerd Font`. Consequently, do not install different modes with the same reported family and style at the same time; the operating system may choose one unpredictably. The folder and ZIP names reflect the source directory, while the displayed family name comes from the font's internal metadata.
+This repo has additional patch policies. Its `normal` mode uses upstream `--careful` to preserve existing glyphs at conflicting codepoints; `mono` adds `--mono`. Its project-specific `forced` and `forced-mono` modes allow replacement at conflicts. `auto` chooses `mono` or `normal` per source face. The wrapper currently has no `Propo` mode. Its name normalizer reports both `normal` and `mono` as `SourceFamily Nerd Font`, and both forced modes as `SourceFamilyForced Nerd Font`. Consequently, do not install different modes with the same reported family and style at the same time; the operating system may choose one unpredictably. The folder and ZIP names reflect the source directory and mode, while the displayed family name comes from the font's internal metadata.
 
 | This repo's mode | Patcher behavior | Display family pattern |
 | --- | --- | --- |
@@ -88,7 +89,7 @@ If “padding” means the empty visual space inside a character cell, there is 
    | `git clone` | Repository URL | Downloads this project into `nerdified-fonts/` |
    | `cd` | `nerdified-fonts` | Makes the project your working directory |
 
-2. Download an **unpatched** font from its publisher. Extract each family's `.ttf` or `.otf` files into its own directory, for example `fontsrc/MyFont/`. Nested directories are allowed. Put the font's license in the same family directory. Do not add a font that is already patched with Nerd Fonts icons. Check the source font's terms before committing it or sharing patched copies.
+2. Download an **unpatched** font from its publisher. Extract each family's `.ttf` or `.otf` files into its own directory, for example `fontsrc/MyFont/`. Nested directories are allowed. Put the font's license in the same family directory. Do not add a font that is already patched with Nerd Fonts icons. Check the source font's terms before committing it or sharing patched copies. If you want multiple variants, add `patch-modes.txt` to that family directory with one mode per line (`auto`, `normal`, `mono`, `forced`, or `forced-mono`); blank lines and lines starting with `#` are ignored. The bundled [JuliaMono configuration](fontsrc/JuliaMono-0.63.2/patch-modes.txt) requests both `auto` and `forced`.
 3. Start the guided build:
 
    ```bash
@@ -99,7 +100,7 @@ If “padding” means the empty visual space inside a character cell, there is 
    | --- | --- | --- |
    | `./scripts/patch_fonts.sh` | None | Installs dependencies on supported systems, lists available families, asks for a selection, shows the Nerd Fonts version and mode, and asks to proceed |
 
-4. When the script completes, open `patched/FontName/` for the individual faces or `releases/FontName-vX.Y.Z.zip` for the family archive. It prints these locations and the cached patcher path. It does not install the fonts into your operating system.
+4. When the script completes, open `patched/FontName/` for the default faces or `releases/FontName-vX.Y.Z.zip` for the default archive. A configured extra mode has its own output, such as `patched/JuliaMonoForced-0.63.2/` and `releases/JuliaMonoForced-0.63.2-vX.Y.Z.zip`. The script prints the output root locations and cached patcher path. It does not install the fonts into your operating system.
 
 On Debian/Ubuntu the installer needs `sudo`; on Homebrew systems it uses `brew`. It installs FontForge, Python/fontTools, curl, and unzip. If these dependencies are already available, skip that installation step. For an unattended build of every family:
 
@@ -119,7 +120,7 @@ Other options:
 | --- | --- | --- |
 | `--font` | A `fontsrc/` directory name | Select one family; repeat the option for several |
 | `--version` | `X.Y.Z` | Patch with a specific Nerd Fonts release instead of checking latest |
-| `--mode` | `auto`, `normal`, `mono`, `forced`, or `forced-mono` | Set the patch policy; default is `auto` |
+| `--mode` | `auto`, `normal`, `mono`, `forced`, or `forced-mono` | Override each selected family's `patch-modes.txt` with one mode; absent an option or config file, default is `auto` |
 | `--no-install` | None | Skip automatic dependency installation |
 | `--yes` | None | Run without the confirmation prompt; also pass `--all` or `--font` in noninteractive use |
 
@@ -143,7 +144,38 @@ Install only the patch mode you intend to use when two modes report the same fam
 
 ### Windows and containers
 
-The current entry script is Bash; its automatic dependency installer supports Debian/Ubuntu and Homebrew. On Windows, a practical route is Ubuntu under WSL with this repo in the WSL filesystem. That route has not been validated end to end by this project. Nerd Fonts [publishes a patcher container](https://github.com/ryanoasis/nerd-fonts#font-patcher), but this repository does not yet have a Docker or Compose entry point that runs its guided selection, metadata normalization, validation, and per-family packaging. The upstream container image's tag is not guaranteed to match a Nerd Fonts release tag; a future container workflow should pin its runtime image while still downloading the matching versioned `FontPatcher.zip`.
+Docker Compose provides the container path on Windows, Linux, and macOS. Install Docker Desktop (or Docker Engine with the Compose plugin) and start it. In PowerShell, clone this repository, enter its directory, put each unpatched font family and its license under `fontsrc/FontName/`, then run:
+
+```powershell
+docker compose run --build --rm patcher
+```
+
+| Command | Option or argument | Meaning |
+| --- | --- | --- |
+| `docker compose run` | `--build` | Build this project's small image using the official `nerdfonts/patcher:4.26.0` image as its FontForge runtime |
+| `docker compose run` | `--rm` | Remove the one-off container when patching finishes |
+| `docker compose run` | `patcher` | Run the guided family selection and version confirmation inside the container |
+
+For a repeatable unattended build of selected families:
+
+```powershell
+docker compose run --build --rm -T -e JOBS=4 patcher --font MyFont --version 3.5.1 --yes
+```
+
+| Command | Option or argument | Meaning |
+| --- | --- | --- |
+| `docker compose run` | `--build` | Build or refresh the local project image before this run |
+| `docker compose run` | `--rm` | Remove the one-off container afterward |
+| `docker compose run` | `-T` | Disable the terminal allocation for unattended use |
+| `docker compose run` | `-e JOBS=4` | Allow up to four font faces to be patched at once; adjust for available memory |
+| `docker compose run` | `patcher` | Use this repo's container service |
+| `patcher` | `--font MyFont` | Build one directory under `fontsrc/`; use `--all` for every family |
+| `patcher` | `--version 3.5.1` | Use this Nerd Fonts **release**; omit it to check the latest stable release |
+| `patcher` | `--yes` | Skip the confirmation prompt |
+
+The container runs [the same script](scripts/patch_fonts.sh) as the host path with dependency installation skipped. [The Dockerfile](Dockerfile) adds Bash, curl, unzip, and fontTools to the [official Nerd Fonts patcher image](https://hub.docker.com/r/nerdfonts/patcher). The image's `4.26.0` tag identifies its bundled patcher program, **not** the Nerd Fonts release used for output. This repo downloads `FontPatcher.zip` and `src/glyphs/` for the selected release into `.cache/nerd-fonts-X.Y.Z/`, then runs those downloaded files through the container's FontForge. The ZIP version is therefore the selected Nerd Fonts release, such as `v3.5.1`, in either environment.
+
+[The Compose file](compose.yaml) mounts the repository at `/workspace`, so `fontsrc/`, `.cache/`, `patched/`, and `releases/` are the same folders on your computer. Files from a container run remain after the container exits. The [`.dockerignore`](.dockerignore) keeps your fonts and generated ZIPs out of the image build context; it does not exclude them from the run-time mount. On Linux, Docker may create root-owned output files when run as root in the container. You can supply your host numeric user and group with Compose's `-u` option if needed. On Windows, keep the project in a drive shared with Docker Desktop. The host path remains available through `./scripts/patch_fonts.sh` on Debian/Ubuntu or Homebrew, and through a compatible WSL environment. The WSL host path has not been validated end to end by this project.
 
 ### Files kept after a build
 
@@ -156,7 +188,7 @@ The cache can be deleted after you no longer need that Nerd Fonts version; a fut
 
 ## Automated releases
 
-The [GitHub Actions workflow](.github/workflows/release.yml) checks for the latest stable Nerd Fonts release at 04:17 UTC each day and can also be started manually. If this repo already has a release with that version tag, it skips the build. Otherwise it patches every family **committed** under `fontsrc/`, validates the fonts, and publishes a `vX.Y.Z` release with one ZIP per family. It uses a GitHub Actions token with `contents: write` permission. A manual run does not add assets to an already existing release because of the current skip check.
+The [GitHub Actions workflow](.github/workflows/release.yml) checks for the latest stable Nerd Fonts release at 04:17 UTC each day and can also be started manually. If this repo already has a release with that version tag, it skips the build. Otherwise it patches every family **committed** under `fontsrc/`, validates the fonts, and publishes a `vX.Y.Z` release with one ZIP per configured family mode. JuliaMono therefore publishes separate regular and Forced ZIPs. It uses a GitHub Actions token with `contents: write` permission. A manual run does not add assets to an already existing release because of the current skip check.
 
 The [Forgejo Actions workflow](.forgejo/workflows/release.yml) runs at 04:37 UTC daily or on manual dispatch. It currently rebuilds all committed families every time. Its upload script skips ZIPs already attached to the matching release. Configure the Forgejo repository variable `FORGEJO_API_URL` with the instance's API base URL and the secret `FORGEJO_TOKEN` with release write access. Its Ubuntu runner needs `sudo` and `apt-get`.
 
