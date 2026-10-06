@@ -20,3 +20,11 @@ The GitHub Actions and Forgejo Actions workflows check the latest stable Nerd Fo
 To publish archives built locally, set `RELEASE_PROVIDER` (`github` or `forgejo`), `RELEASE_REPOSITORY` (`owner/repo`), `RELEASE_TOKEN`, and for Forgejo `RELEASE_API_URL`, then run `python3 scripts/publish_release.py X.Y.Z`. Publishing is idempotent for archives already attached to the matching release.
 
 The legacy `build_family.sh` and `patch_ttf.sh` scripts remain available for individual builds. The main workflow is `patch_fonts.sh`.
+
+## License
+
+The repository's scripts, workflows, and documentation are licensed under the
+[MIT License](LICENSE). Font files retain their own licenses: the bundled
+JuliaMono and Lekton fonts are under the SIL Open Font License 1.1, with license
+notices in their respective `fontsrc/` directories. Fonts added later retain
+their original licenses; include each font's license file beside its sources.
