@@ -1,0 +1,29 @@
+name: Follow Nerd Fonts releases
+on:
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check upstream version
+        id: version
+        run: |
+          version=$(python3 scripts/latest_version.py)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if gh release view "v$version" >/dev/null 2>&1; then echo 'exists=true' >> "$GITHUB_OUTPUT"; fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: Install, patch, package
+        if: steps.version.outputs.exists != 'true'
+        run: scripts/patch_fonts.sh --version "${{ steps.version.outputs.version }}" --all --yes
+      - name: Publish family archives
+        if: steps.version.outputs.exists != 'true'
+        run: python3 scripts/publish_release.py "${{ steps.version.outputs.version }}"
+        env:
+          RELEASE_PROVIDER: github
+          RELEASE_TOKEN: ${{ github.token }}

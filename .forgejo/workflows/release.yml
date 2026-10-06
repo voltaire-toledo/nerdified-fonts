@@ -1,0 +1,22 @@
+name: Follow Nerd Fonts releases
+on:
+  schedule:
+    - cron: '37 4 * * *'
+  workflow_dispatch:
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install, patch, package
+        run: |
+          version=$(python3 scripts/latest_version.py)
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+          scripts/patch_fonts.sh --version "$version" --all --yes
+      - name: Publish family archives
+        run: python3 scripts/publish_release.py "$VERSION"
+        env:
+          RELEASE_PROVIDER: forgejo
+          RELEASE_API_URL: ${{ vars.FORGEJO_API_URL }}
+          RELEASE_REPOSITORY: ${{ github.repository }}
+          RELEASE_TOKEN: ${{ secrets.FORGEJO_TOKEN }}
