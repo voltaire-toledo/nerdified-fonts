@@ -1,5 +1,11 @@
 name: Follow Nerd Fonts releases
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'fontsrc/**'
+      - 'scripts/**'
+      - '.github/workflows/release.yml'
   schedule:
     - cron: '17 4 * * *'
   workflow_dispatch:
