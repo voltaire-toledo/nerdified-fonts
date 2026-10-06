@@ -2,7 +2,9 @@
 set -euo pipefail
 
 version="${1:-3.5.1}"
-destination="${2:-.cache/nerd-fonts-$version}"
+script_dir=$(cd "$(dirname "$0")" && pwd)
+repo_dir=$(cd "$script_dir/.." && pwd)
+destination="${2:-$repo_dir/.cache/nerd-fonts-$version}"
 mkdir -p "$destination"
 if [[ -x "$destination/font-patcher" && -d "$destination/src/glyphs" ]]; then
   echo "$destination"

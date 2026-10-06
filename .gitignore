@@ -1,5 +1,12 @@
+# Downloaded Nerd Fonts release archives and extracted patcher/glyph assets.
 .cache/
+
+# Intermediate output from the legacy family builders.
 build/
+
+# Python bytecode created while running local scripts.
 __pycache__/
+
+# Generated patched fonts and one ZIP per font family.
 patched/
 releases/

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 usage() {
-  echo "usage: $0 --input-dir DIR --output-dir DIR --font-patcher FILE --glyphdir DIR --mode normal|mono|forced|forced-mono [--family-name NAME] [--fontforge CMD]" >&2
+  echo "usage: $0 --input-dir DIR --output-dir DIR --font-patcher FILE --glyphdir DIR --mode auto|normal|mono|forced|forced-mono [--family-name NAME] [--fontforge CMD]" >&2
   exit 2
 }
 
@@ -21,7 +21,7 @@ while (($#)); do
   esac
 done
 [[ -d "$input_dir" && -n "$output_dir" && -f "$font_patcher" && -d "$glyphdir" ]] || usage
-case "$mode" in normal|mono|forced|forced-mono) ;; *) usage ;; esac
+case "$mode" in auto|normal|mono|forced|forced-mono) ;; *) usage ;; esac
 shopt -s nullglob
 mapfile -d '' -t inputs < <(find "$input_dir" -type f \( -iname '*.ttf' -o -iname '*.otf' \) -print0 | sort -z)
 ((${#inputs[@]})) || { echo "no TTFs in $input_dir" >&2; exit 1; }
@@ -43,12 +43,57 @@ max_jobs=${JOBS:-4}
 
 build_one() {
   local input=$1 name work_dir log_file output
+  local effective_mode=$mode
   local -a patch_args normalize_args generated
   name=$(basename "$input")
+  if [[ "$effective_mode" == auto ]]; then
+    if python3 - "$input" <<'PY'
+import sys
+from fontTools.ttLib import TTFont
+
+font = TTFont(sys.argv[1], lazy=True)
+if "cmap" not in font or "hmtx" not in font:
+    raise SystemExit(1)
+cmap = {}
+for table in font["cmap"].tables:
+    cmap.update(table.cmap)
+sample = (0x49, 0x4D, 0x57, 0x61, 0x69, 0x6D, 0x2E)  # I M W a i m .
+if not all(codepoint in cmap for codepoint in sample):
+    panose = list(font["OS/2"].panose) if "OS/2" in font else []
+    is_mono = panose and ((panose[0] == 2 and panose[3] == 9) or
+                          (panose[0] == 3 and panose[3] == 3))
+    raise SystemExit(0 if is_mono else 1)
+widths = [font["hmtx"].metrics[cmap[codepoint]][0] for codepoint in sample]
+mono = True
+for index, width in enumerate(widths[1:], start=1):
+    if width == widths[0]:
+        continue
+    # Match Nerd Fonts' tolerance for narrow lowercase i and period glyphs.
+    if index not in (4, 6) or width > widths[0]:
+        mono = False
+        break
+    glyph_set = font.getGlyphSet()
+    glyph = glyph_set[cmap[sample[index]]]
+    from fontTools.pens.boundsPen import BoundsPen
+    pen = BoundsPen(glyph_set)
+    glyph.draw(pen)
+    bounds_width = 0 if pen.bounds is None else pen.bounds[2] - pen.bounds[0]
+    if widths[0] <= bounds_width:
+        mono = False
+        break
+raise SystemExit(0 if mono else 1)
+PY
+    then
+      effective_mode=mono
+    else
+      effective_mode=normal
+    fi
+    echo "$(basename "$(dirname "$input")")/$name: auto-selected $effective_mode mode"
+  fi
   work_dir=$(mktemp -d "$output_dir/.work.XXXXXX")
   log_file="$work_dir/fontforge.log"
   patch_args=(--complete --no-progressbars --glyphdir "$glyphdir" --outputdir "$work_dir")
-  case "$mode" in
+  case "$effective_mode" in
     normal) patch_args+=(--careful) ;;
     mono) patch_args+=(--careful --mono) ;;
     forced) patch_args+=(--makegroups 4) ;;
@@ -69,7 +114,7 @@ build_one() {
   output="$output_dir/${name%.*}.${generated[0]##*.}"
   mv "${generated[0]}" "$output"
   rm -rf "$work_dir"
-  normalize_args=(--font "$output" --source "$input" --mode "$mode")
+  normalize_args=(--font "$output" --source "$input" --mode "$effective_mode")
   [[ -z "$family_name" ]] || normalize_args+=(--family-name "$family_name")
   python3 "$script_dir/normalize_font_names.py" "${normalize_args[@]}"
 }

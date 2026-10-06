@@ -2,9 +2,9 @@
 set -euo pipefail
 script_dir=$(cd "$(dirname "$0")" && pwd)
 repo_dir=$(cd "$script_dir/.." && pwd)
-version= families=() mode=mono install_deps=1 yes=0
+version= families=() mode=auto install_deps=1 yes=0
 usage() {
-  echo "Usage: $0 [--version VERSION] [--font FAMILY ... | --all] [--mode normal|mono|forced|forced-mono] [--no-install] [--yes]" >&2
+  echo "Usage: $0 [--version VERSION] [--font FAMILY ... | --all] [--mode auto|normal|mono|forced|forced-mono] [--no-install] [--yes]" >&2
   exit 2
 }
 while (($#)); do
@@ -19,7 +19,7 @@ while (($#)); do
     *) usage ;;
   esac
 done
-case "$mode" in normal|mono|forced|forced-mono) ;; *) usage ;; esac
+case "$mode" in auto|normal|mono|forced|forced-mono) ;; *) usage ;; esac
 if ((install_deps)); then
   if command -v apt-get >/dev/null; then
     if [[ $(id -u) -eq 0 ]]; then sudo_cmd=(); else sudo_cmd=(sudo); fi
@@ -75,5 +75,16 @@ for family in "${families[@]}"; do
   find "$output" -maxdepth 1 -type f \( -iname '*.ttf' -o -iname '*.otf' \) -delete
   "$script_dir/build_fonts.sh" --input-dir "$repo_dir/fontsrc/$family" --output-dir "$output" --font-patcher "$nerd_dir/font-patcher" --glyphdir "$nerd_dir/src/glyphs" --mode "$mode"
   "$script_dir/validate_fonts.sh" "$output"
-  python3 "$script_dir/package_family.py" "$output" "$repo_dir/fontsrc/$family" "$repo_dir/releases/$family-v$version.zip"
+  python3 "$script_dir/package_family.py" "$output" "$repo_dir/fontsrc/$family" "$repo_dir/releases/$family-v$version.zip" "$nerd_dir/src/glyphs"
 done
+
+echo "Build complete. Retained paths:"
+echo "  Patcher archive and extracted assets: $nerd_dir"
+echo "  Patched fonts: $repo_dir/patched/"
+echo "  Family ZIP archives: $repo_dir/releases/"
+echo "FontForge logs and .work.* directories are normally removed after each face."
+mapfile -d '' -t leftover_work < <(find "$repo_dir/patched" -mindepth 2 -maxdepth 2 -type d -name '.work.*' -print0)
+if ((${#leftover_work[@]})); then
+  echo "Leftover work directories (for example after interruption):" >&2
+  printf '  %s\n' "${leftover_work[@]}" >&2
+fi
