@@ -111,12 +111,13 @@ PY
     rm -rf "$work_dir"
     exit 1
   fi
-  output="$output_dir/${name%.*}.${generated[0]##*.}"
-  mv "${generated[0]}" "$output"
-  rm -rf "$work_dir"
-  normalize_args=(--font "$output" --source "$input" --mode "$effective_mode")
+  normalize_args=(--font "${generated[0]}" --source "$input" --mode "$effective_mode" --rename-file)
   [[ -z "$family_name" ]] || normalize_args+=(--family-name "$family_name")
   python3 "$script_dir/normalize_font_names.py" "${normalize_args[@]}"
+  mapfile -t generated < <(find "$work_dir" -maxdepth 1 -type f \( -iname '*.ttf' -o -iname '*.otf' \) -print)
+  output="$output_dir/${generated[0]##*/}"
+  mv "${generated[0]}" "$output"
+  rm -rf "$work_dir"
 }
 
 pids=()

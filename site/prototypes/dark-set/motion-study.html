@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An open, motion-led direction for explaining Nerd Fonts glyphs.">
+  <title>Motion Study | Nerd Fonts prototype</title><link rel="stylesheet" href="prototypes.css"><style>:focus-visible { outline: 3px solid #e3b83f; outline-offset: 4px; }</style>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="index.html">vt/nerdified-fonts</a><nav class="toplinks" aria-label="Page navigation"><a href="#glyphs">Glyphs</a><a href="#workflow">Workflow</a><a href="../../validation.html">Validator</a></nav></header>
+  <main>
+    <section class="motion-hero">
+      <p class="eyebrow">NERD FONTS / PATCHED TYPE</p>
+      <h1>Nerd Fonts glyphs in your file list.</h1>
+      <p class="lede">Patch your monospaced font with the folder, language, and git glyphs your tools can display.</p>
+      <div class="actions"><a class="button" href="#workflow">Start with your font</a><a class="text-link" href="../../index.html#variants">See the width comparison</a></div>
+      <div class="motion-stage" id="glyphs">
+        <div class="motion-trail" aria-label="Folder, Python, Markdown, and Git glyph samples"><span>&#xe613;</span><span>&#xe73c;</span><span>&#xf40d;</span><span>&#xe702;</span></div>
+        <div class="motion-copy"><h2>Glyphs from the tools you use.</h2><p>Keep the font family and its spacing. Add the visual marks used in file trees, prompts, and code editors.</p><p class="micro">LOCAL NERD FONT SPECIMEN / FOUR EXAMPLES</p></div>
+      </div>
+    </section>
+    <section class="section" id="workflow"><p class="eyebrow">PATCH A FONT FAMILY</p><h2>Start with unpatched TTF or OTF files.</h2><p class="section-intro">Place a source family and its license under <code>fontsrc/</code>, run the guided script, then check the results in <code>patched/</code>.</p><pre class="code"><span class="comment"># from the project directory</span>
+<span class="command">./scripts/patch_fonts.sh</span></pre><p><a class="button" href="https://github.com/voltaire-toledo/nerdified-fonts#quickstart-patch-fonts-locally">Read the full instructions</a></p></section>
+  </main>
+  <footer class="footer"><span>Motion Study / graphite and marigold</span><a href="index.html">All four studies</a></footer>
+</body>
+</html>

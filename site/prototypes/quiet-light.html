@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quiet Specimen | Nerd Fonts design prototype</title>
+  <link rel="stylesheet" href="prototypes.css">
+  <style>:focus-visible { outline: 3px solid #315fbd; outline-offset: 3px; }</style>
+</head>
+<body data-style="quiet">
+  <header class="prototype-shell prototype-nav">
+    <a class="prototype-brand" href="index.html">vt/nerdified-fonts</a>
+    <nav class="prototype-nav-links" aria-label="Prototype navigation"><a href="#patch">Patch</a><a href="#width">Icon width</a><a href="#validate">Validate</a></nav>
+  </header>
+  <main class="prototype-shell">
+    <section class="prototype-hero quiet-hero">
+      <div class="prototype-copy">
+        <div class="quiet-intro-mark"><span aria-hidden="true">&#xf418;</span><span class="prototype-label">A patch workflow for mono fonts</span></div>
+        <h1>Your mono font.<br>Every icon you need.</h1>
+        <p>Keep the typeface you know. Add Nerd Fonts glyphs for folders, code, git, and the tools you use every day.</p>
+        <div class="prototype-actions"><a class="prototype-button" href="#patch">Patch a font</a><a class="prototype-link" href="#width">See icon widths ↓</a></div>
+      </div>
+      <figure class="specimen" aria-label="Patched project file list">
+        <div class="specimen-top"><span>~/work/mono-project</span><span>PATCHED</span></div>
+        <p class="specimen-heading">PROJECT FILES</p>
+        <div class="file-row"><span class="file-icon glyph-folder">&#xe613;</span><span>src/</span><span class="file-meta">directory</span></div>
+        <div class="file-row"><span class="file-icon glyph-python">&#xe73c;</span><span>patch.py</span><span class="file-meta">python</span></div>
+        <div class="file-row"><span class="file-icon">&#xf40d;</span><span>README.md</span><span class="file-meta">markdown</span></div>
+        <div class="file-row"><span class="file-icon glyph-git">&#xe702;</span><span>.git/</span><span class="file-meta">repository</span></div>
+        <div class="file-status"><span>&#xf418; main</span><span class="glyph-check">&#xf42e; clean</span></div>
+      </figure>
+    </section>
+    <section class="prototype-section" id="width">
+      <p class="prototype-label">The same glyph, three fits</p>
+      <h2>Choose the icon width</h2>
+      <p>Compare how a folder glyph sits against the terminal cell grid.</p>
+      <div class="width-row">
+        <div class="width-sample"><strong>NF <small>normal</small></strong><div class="cell-track"><i></i><i></i><i></i><i></i><i></i><span class="track-icon track-icon-wide">&#xe613;</span></div><p class="prototype-caption">May overhang</p></div>
+        <div class="width-sample"><strong>NFM <small>mono</small></strong><div class="cell-track"><i></i><i></i><i></i><i></i><i></i><span class="track-icon">&#xe613;</span></div><p class="prototype-caption">Fits one cell</p></div>
+        <div class="width-sample"><strong>NFP <small>proportional</small></strong><div class="cell-track"><i></i><i></i><i></i><i></i><i></i><span class="track-icon track-icon-propo">&#xe613;</span></div><p class="prototype-caption">Follows visual width</p></div>
+      </div>
+    </section>
+    <section class="prototype-section" id="patch">
+      <p class="prototype-label">Three steps</p>
+      <h2>Keep your mono. Add the icons.</h2>
+        <div class="mini-steps"><div class="mini-step"><b>SOURCE</b><p>Bring your original TTF or OTF family.</p></div><div class="mini-step"><b>PATCH</b><p>Run the guided build with a versioned glyph set.</p></div><div class="mini-step"><b>USE</b><p>Inspect the faces, then install or package them.</p></div></div>
+    </section>
+    <footer class="prototype-footer" id="validate"><span>Quiet Specimen / Light</span><span>JuliaMono body · Lekton title · bold sans section heads</span></footer>
+  </main>
+</body>
+</html>

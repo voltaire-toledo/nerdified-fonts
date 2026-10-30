@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A linear view of the Nerd Fonts source, patch, and output workflow.">
+  <title>Build Trace | Nerd Fonts prototype</title><link rel="stylesheet" href="prototypes.css"><style>:focus-visible { outline: 3px solid #e3b83f; outline-offset: 4px; }</style>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="index.html">vt/nerdified-fonts</a><nav class="toplinks" aria-label="Page navigation"><a href="#steps">Workflow</a><a href="#preview">Preview</a><a href="../../validation.html">Validator</a></nav></header>
+  <main>
+    <section class="trace-hero">
+      <div><p class="eyebrow">SOURCE / PATCH / FONT FILES</p><h1>Patch a font family in three steps.</h1><p class="lede">Bring a monospaced family. Run the Nerd Fonts patcher. Inspect the generated faces before installing them.</p><div class="actions"><a class="button" href="#steps">View the steps</a><a class="text-link" href="../../validation.html">Open the font validator</a></div></div>
+      <ol class="trace-route" id="steps">
+        <li><span class="trace-mark" aria-hidden="true"></span><div class="trace-copy"><h2>Choose a source family</h2><p>Use unpatched TTF or OTF files and include the font license.</p><p><code>fontsrc/FontName/</code></p></div></li>
+        <li><span class="trace-mark" aria-hidden="true"></span><div class="trace-copy"><h2>Run the guided build</h2><p>Select the family and patch mode in the script.</p><p><code>./scripts/patch_fonts.sh</code></p></div></li>
+        <li><span class="trace-mark" aria-hidden="true"></span><div class="trace-copy"><h2>Inspect the output</h2><p>Find generated font faces in <code>patched/</code> and archives in <code>releases/</code>.</p><p><a href="../../validation.html">Compare glyphs in the validator</a></p></div></li>
+      </ol>
+    </section>
+    <section class="section" id="preview"><p class="eyebrow">ONE PROJECT VIEW</p><h2>File names with their glyphs.</h2><p class="section-intro">A patched font supplies the symbols. Your terminal or editor chooses how the file view is displayed.</p><div class="sample-window"><div class="window-bar"><span>~/work/mono-project</span><span>PATCHED FONT</span></div><div class="file-list"><div class="file-row"><span class="icon">&#xe613;</span><span>src/</span><span class="file-meta">directory</span></div><div class="file-row"><span class="icon icon-blue">&#xe73c;</span><span>patch.py</span><span class="file-meta">python</span></div><div class="file-row"><span class="icon">&#xf40d;</span><span>README.md</span><span class="file-meta">markdown</span></div><div class="file-row"><span class="icon icon-blue">&#xe702;</span><span>.git/</span><span class="file-meta">repository</span></div></div></div></section>
+  </main>
+  <footer class="footer"><span>Build Trace / graphite and marigold</span><a href="index.html">All four studies</a></footer>
+</body>
+</html>

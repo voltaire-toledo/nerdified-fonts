@@ -6,7 +6,7 @@ import re
 import urllib.request
 
 url = 'https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest'
-headers = {'Accept': 'application/vnd.github+json', 'User-Agent': 'VT-NerdFonts'}
+headers = {'Accept': 'application/vnd.github+json', 'User-Agent': 'Nerdified-Fonts'}
 if os.environ.get('GITHUB_TOKEN'):
     headers['Authorization'] = 'Bearer ' + os.environ['GITHUB_TOKEN']
 with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=30) as response:

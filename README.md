@@ -1,4 +1,4 @@
-# VT-NerdFonts
+# Nerdified Fonts
 
 ## What this repository does
 
@@ -74,6 +74,8 @@ This repo has additional patch policies. Its `normal` mode uses upstream `--care
 | A sequence such as `<-` becomes one drawn glyph with exact alignment | Choose a source font with the desired ligature, then test it in the target terminal or editor | A ligature replaces a **sequence** of characters during text shaping. Nerd Fonts width mode does not create that ligature or guarantee its two-character advance or visual margins |
 
 If “padding” means the empty visual space inside a character cell, there is no universal zero-padding switch. The patcher controls glyph scale and advance width, while the source glyph's outline and the terminal's cell metrics also matter. `mono` protects the grid but often makes icons look smaller. Standard NF makes icons look fuller but permits overhang. Propo gives an icon a wider advance and suits interfaces without a fixed grid. Compare a few actual icons in the application you use before deciding; [the upstream explanation shows these three layouts](https://github.com/ryanoasis/nerd-fonts/discussions/1103).
+
+Generated face filenames and internal font family/full/PostScript names use abbreviated width variants: `JuliaMono NF`, `JuliaMono NFM`, `JuliaMono Forced NF`, or `JuliaMono Forced NFM`, followed by the source style. For example, `JuliaMonoNFM-BoldItalic.ttf` has the full name `JuliaMono NFM Bold Italic`. `auto` uses the abbreviation of its resolved mode. `NFP` is reserved for Propo, which this wrapper does not expose. Explicit `--family-name` overrides remain authoritative, and `patch_ttf.sh --output` retains the requested destination filename. This naming applies to new builds; existing fonts require rebuilding.
 
 ## Quickstart: Patch fonts locally
 
@@ -212,7 +214,7 @@ The legacy `build_family.sh` and `patch_ttf.sh` scripts remain available for ind
 
 ## Website
 
-The static project page lives in [`site/`](site/). It explains the patching flow with diagrams, links to the official [Nerd Fonts Icon Finder](https://www.nerdfonts.com/cheat-sheet), and includes screen captures from [Programming Fonts](https://www.programmingfonts.org/) that compare box drawing in two unpatched source fonts. The captures demonstrate why you should test the final patched font in your own terminal as well. The [GitHub Pages workflow](.github/workflows/pages.yml) publishes that directory when its files change on `main` or when manually dispatched. In GitHub repository settings, Pages must use **GitHub Actions** as its build and deployment source; the workflow needs the repository's Pages permissions. The expected project URL is `https://voltaire-toledo.github.io/nerdified-fonts/` after a successful deployment.
+The static project page lives in [`site/`](site/), including the [local font validator](site/validation.html). Both pages share light, dark, and retro fun themes. It explains the patching flow with diagrams, links to the official [Nerd Fonts Icon Finder](https://www.nerdfonts.com/cheat-sheet), and includes screen captures from [Programming Fonts](https://www.programmingfonts.org/) that compare box drawing in two unpatched source fonts. The captures demonstrate why you should test the final patched font in your own terminal as well. The [GitHub Pages workflow](.github/workflows/publish-ghp.yml) publishes that directory when its files change on `main` or when manually dispatched. In GitHub repository settings, Pages must use **GitHub Actions** as its build and deployment source; the workflow needs the repository's Pages permissions. The expected project URL is `https://voltaire-toledo.github.io/nerdified-fonts/` after a successful deployment.
 
 Forgejo Actions can run a deployment job, but a Forgejo instance does not automatically provide a GitHub Pages equivalent. A Forgejo administrator needs to provide a static web host (or a separate Pages service such as Codeberg Pages) and its deployment credentials. The same `site/` directory can be served there without a build step. This repository does not configure a Forgejo publishing target because no Forgejo host or Pages service has been specified.
 
@@ -248,6 +250,63 @@ unzip -t releases/MyFont-v3.5.1.zip
 | --- | --- | --- |
 | `unzip` | `-t` | Test ZIP entries and CRCs without extracting them |
 | `unzip` | `releases/MyFont-v3.5.1.zip` | Archive to check; replace the family and version with yours |
+
+### Check glyph coverage and terminal rendering
+
+The build validator checks that a patched font contains a large private-use area (PUA) range. To compare every expected Nerd Fonts icon codepoint against the font, generate a glyph sheet with `scripts/show_font_glyphs.py` and the `glyphnames.json` that came from the same Nerd Fonts release used to patch it:
+
+```bash
+python3 scripts/show_font_glyphs.py patched/JuliaMono-0.63.2/JuliaMono-Regular.ttf --glyphnames .cache/nerd-fonts-3.5.1/glyphnames.json > /tmp/juliamono-glyph-sheet.txt
+```
+
+| Command | Option or argument | Meaning |
+| --- | --- | --- |
+| `python3` | `scripts/show_font_glyphs.py` | Reads the font cmap and prints each mapped PUA character with its codepoint; also prints the box drawing and block element ranges |
+| `show_font_glyphs.py` | `patched/JuliaMono-0.63.2/JuliaMono-Regular.ttf` | Font face to inspect; replace with any patched TTF or OTF |
+| `show_font_glyphs.py` | `--glyphnames .cache/nerd-fonts-3.5.1/glyphnames.json` | Compare the font against the expected icon codepoints in the matching Nerd Fonts release map |
+| `>` | `/tmp/juliamono-glyph-sheet.txt` | Save the glyph sheet so you can page through it in the terminal |
+
+The script reports coverage to standard error and exits with an error if a Nerd Fonts codepoint from the supplied map, a box drawing character, or a block element is missing. Without `--glyphnames`, it still lists mapped PUA glyphs and checks the drawing ranges, but cannot tell which Nerd Fonts icons are missing. The glyph sheet also lists mapped supplemental block, sextant, and octant characters.
+
+To check the characters used by a specific ANSI art file, pass it with `--check-text`:
+
+```bash
+python3 scripts/show_font_glyphs.py patched/JuliaMono-0.63.2/JuliaMono-Regular.ttf --glyphnames .cache/nerd-fonts-3.5.1/glyphnames.json --check-text ~/CODE/dotfiles/os/common/config/fastfetch/.archive/jigs_rev09_all_no_ugly_work9_256.ans > /tmp/juliamono-art-glyphs.txt
+```
+
+| Command | Option or argument | Meaning |
+| --- | --- | --- |
+| `python3` | `scripts/show_font_glyphs.py` | Checks mapped glyphs and writes the full glyph sheet to standard output |
+| `show_font_glyphs.py` | `patched/JuliaMono-0.63.2/JuliaMono-Regular.ttf` | Font file being inspected |
+| `show_font_glyphs.py` | `--glyphnames .cache/nerd-fonts-3.5.1/glyphnames.json` | Check Nerd Fonts icon coverage against this release's glyph map |
+| `show_font_glyphs.py` | `--check-text PATH` | Strip ANSI CSI control sequences from the text file, then check each visible codepoint and report the number of distinct font advances |
+| `>` | `/tmp/juliamono-art-glyphs.txt` | Save the potentially long glyph sheet for paging through the terminal |
+
+For the archived Fastfetch art in this example, both installed JuliaMono variants contain all 110 visible codepoints, with one font advance across the characters used. The art uses 81 sextant, octant, diagonal, and fractional block characters in the supplementary Unicode ranges, alongside the classic U+2580–U+259F blocks. It contains no Nerd Fonts private-use icons. The ANSI color controls use `38;2` RGB values, which call for truecolor terminal support. If the art still looks broken, investigate the terminal's Unicode character width table, font fallback, and RGB escape handling; changing the `careful`/Forced collision policy will not supply a missing terminal capability. A mapped codepoint can still look wrong if the application or terminal draws its outline incorrectly.
+
+Open the sample gallery in the terminal where you selected the patched font. It includes supplemental sextant and octant shapes as well as classic box and block characters:
+
+```bash
+less -R examples/terminal-table-gallery.txt
+```
+
+| Command | Option or argument | Meaning |
+| --- | --- | --- |
+| `less` | `-R` | Show text while allowing recognized terminal color sequences; this sample is plain text |
+| `less` | `examples/terminal-table-gallery.txt` | Sample with joined single, double, and mixed borders, a flow diagram, blocks, and repeating character columns |
+
+To inspect the generated icon sheet in that same terminal:
+
+```bash
+less -R /tmp/juliamono-glyph-sheet.txt
+```
+
+| Command | Option or argument | Meaning |
+| --- | --- | --- |
+| `less` | `-R` | Page through the UTF-8 glyph sheet |
+| `less` | `/tmp/juliamono-glyph-sheet.txt` | File generated by the previous command; each entry shows a codepoint and its rendered glyph |
+
+During the visual check, set the application to the patched font family and style. A mapped codepoint can still display as a square if the application selects another font, substitutes a fallback, or cannot render that glyph. The gallery checks how your terminal draws borders; the glyph sheet checks which icon codepoints are present.
 
 ## License
 

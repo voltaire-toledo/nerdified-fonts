@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Night Console | Nerd Fonts design prototype</title>
+  <link rel="stylesheet" href="prototypes.css">
+  <style>:focus-visible { outline: 3px solid #e2ad58; outline-offset: 3px; }</style>
+</head>
+<body data-style="night">
+  <header class="prototype-shell prototype-nav">
+    <a class="prototype-brand" href="index.html">vt/nerdified-fonts <span style="color:var(--accent)" aria-hidden="true">&#xf42e;</span></a>
+    <nav class="prototype-nav-links" aria-label="Prototype navigation"><a href="#patch">[patch]</a><a href="#width">[width]</a><a href="#validate">[validate]</a></nav>
+  </header>
+  <main class="prototype-shell">
+    <section class="prototype-hero">
+      <div class="prototype-copy">
+        <p class="prototype-label">FONT PATCHER / READY</p>
+        <h1>Patch your font for terminal glyphs.</h1>
+        <p>Patch your monospaced font with the glyphs your terminal and editor already expect.</p>
+        <div class="prototype-actions"><a class="prototype-button" href="#patch">Run the workflow</a><a class="prototype-link" href="#width">Inspect width ↓</a></div>
+        <div class="night-readout"><span>source faces</span><b>TTF · OTF</b><span>icon set</span><b>versioned</b></div>
+      </div>
+      <figure class="specimen" aria-label="Terminal-style project file view with Nerd Font glyphs">
+        <div class="specimen-top"><span>FILES / mono-project</span><span>&#xf42e; 4 READY</span></div>
+        <p class="specimen-heading">TREE</p>
+        <div class="file-row"><span class="file-icon glyph-folder">&#xe613;</span><span>src/</span><span class="file-meta">DIR</span></div>
+        <div class="file-row"><span class="file-icon glyph-python">&#xe73c;</span><span>patch.py</span><span class="file-meta">PY</span></div>
+        <div class="file-row"><span class="file-icon">&#xf40d;</span><span>README.md</span><span class="file-meta">MD</span></div>
+        <div class="file-row"><span class="file-icon glyph-git">&#xe702;</span><span>.git/</span><span class="file-meta">GIT</span></div>
+        <div class="file-status"><span>&#xf418; main</span><span class="glyph-check">&#xf42e; clean tree</span></div>
+      </figure>
+    </section>
+    <section class="prototype-section" id="width">
+      <p class="prototype-label">CELL METRICS / VISUAL SAMPLE</p>
+      <h2>Choose the icon width</h2>
+      <p>The folder glyph makes the width behavior visible against one shared grid.</p>
+      <div class="width-row">
+        <div class="width-sample"><strong>NF <small>normal</small></strong><div class="cell-track"><i></i><i></i><i></i><i></i><i></i><span class="track-icon track-icon-wide">&#xe613;</span></div><p class="prototype-caption">Can overhang adjacent cell</p></div>
+        <div class="width-sample"><strong>NFM <small>mono</small></strong><div class="cell-track"><i></i><i></i><i></i><i></i><i></i><span class="track-icon">&#xe613;</span></div><p class="prototype-caption">One terminal cell</p></div>
+        <div class="width-sample"><strong>NFP <small>proportional</small></strong><div class="cell-track"><i></i><i></i><i></i><i></i><i></i><span class="track-icon track-icon-propo">&#xe613;</span></div><p class="prototype-caption">Advance follows glyph width</p></div>
+      </div>
+    </section>
+    <section class="prototype-section" id="patch">
+      <p class="prototype-label">PATCH SEQUENCE</p>
+      <h2>Keep your mono. Add the icons.</h2>
+        <div class="mini-steps"><div class="mini-step"><b>INPUT</b><p>Original family and license.</p></div><div class="mini-step"><b>BUILD</b><p>Versioned patcher and glyph sources.</p></div><div class="mini-step"><b>OUTPUT</b><p>Validated faces and family archives.</p></div></div>
+    </section>
+    <footer class="prototype-footer" id="validate"><span>Night Console / Dark TUI</span><span>JuliaMono / graphite, marigold + blue</span></footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A monitor preview and three-step guide to patching a font family with Nerd Fonts.">
+  <title>nerdified-fonts | Font patch workflow</title><link rel="stylesheet" href="prototypes.css"><style>:focus-visible { outline: 3px solid #e3b83f; outline-offset: 4px; }</style>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="index.html">vt/nerdified-fonts</a><nav class="toplinks" aria-label="Page navigation"><a href="#comparison">Comparison</a><a href="#workflow">Workflow</a><a href="../../validation.html">Validator</a></nav></header>
+  <main>
+    <section class="logo-hero" aria-labelledby="logo-title">
+      <h1 class="logo-heading" id="logo-title">nerdified-fonts</h1>
+    </section>
+    <section class="monitor-hero" id="comparison" aria-label="Font preview before and after patching">
+      <div class="monitor" aria-label="Monitor preview comparing source and patched font lists">
+        <div class="monitor-top"><i></i><i></i><i></i><span>mono-project / file view</span></div>
+        <div class="monitor-views">
+          <section class="monitor-view" aria-label="Source font file list">
+            <h2>SOURCE FONT</h2>
+            <div class="file-list">
+              <div class="file-row"><span class="empty-icon"></span><span>src/</span><span class="file-meta">directory</span></div>
+              <div class="file-row"><span class="empty-icon"></span><span>patch.py</span><span class="file-meta">python</span></div>
+              <div class="file-row"><span class="empty-icon"></span><span>README.md</span><span class="file-meta">markdown</span></div>
+              <div class="file-row"><span class="empty-icon"></span><span>.git/</span><span class="file-meta">repository</span></div>
+            </div>
+            <div class="status"><span>main</span><span>working tree clean</span></div>
+          </section>
+          <section class="monitor-view patched" aria-label="Patched font file list">
+            <h2>PATCHED FONT</h2>
+            <div class="file-list">
+              <div class="file-row"><span class="icon">&#xe613;</span><span>src/</span><span class="file-meta">directory</span></div>
+              <div class="file-row"><span class="icon icon-blue">&#xe73c;</span><span>patch.py</span><span class="file-meta">python</span></div>
+              <div class="file-row"><span class="icon">&#xf40d;</span><span>README.md</span><span class="file-meta">markdown</span></div>
+              <div class="file-row"><span class="icon icon-blue">&#xe702;</span><span>.git/</span><span class="file-meta">repository</span></div>
+            </div>
+            <div class="status"><span>main</span><b>&#xf42e; working tree clean</b></div>
+          </section>
+        </div>
+        <div class="monitor-foot"><span>Source font / same names, same rows</span><span>Patched font / added glyphs</span></div>
+      </div>
+    </section>
+    <section class="section workflow-section" id="workflow">
+      <p class="eyebrow">FONT PATCH WORKFLOW</p>
+      <h2>Three steps from source files to patched fonts.</h2>
+      <ol class="process-steps">
+        <li><h3>Choose a source family</h3><p>Add unpatched TTF or OTF files and the font license under <code>fontsrc/FontName/</code>.</p></li>
+        <li><h3>Run the guided patcher</h3><p>Select the family and patch mode.</p><pre class="code"><span class="command">./scripts/patch_fonts.sh</span></pre></li>
+        <li><h3>Inspect the output</h3><p>Find generated faces in <code>patched/</code> and family archives in <code>releases/</code>.</p><p><a href="../../validation.html">Compare glyphs in the validator</a></p></li>
+      </ol>
+      <p class="workflow-link"><a href="https://github.com/voltaire-toledo/nerdified-fonts#quickstart-patch-fonts-locally">Read the setup instructions</a></p>
+    </section>
+  </main>
+  <footer class="footer"><span>nerdified-fonts / wordmark image, file preview, three-step workflow</span><a href="index.html">All four studies</a></footer>
+</body>
+</html>

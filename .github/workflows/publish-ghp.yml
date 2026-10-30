@@ -4,7 +4,7 @@ on:
     branches: [main]
     paths:
       - 'site/**'
-      - '.github/workflows/pages.yml'
+      - '.github/workflows/publish-ghp.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -27,3 +27,4 @@ jobs:
           path: site
       - id: deployment
         uses: actions/deploy-pages@v4
+        

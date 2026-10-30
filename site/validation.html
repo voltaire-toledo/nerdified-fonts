@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Compare local font glyphs, box drawing, and character advances in your browser. Font files are not uploaded.">
+  <title>Validate fonts — vt/nerdified-fonts</title>
+  <script src="theme.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="index.html">vt/nerdified-fonts</a>
+    <nav aria-label="Main navigation">
+      <a href="index.html#patch">Patch fonts</a>
+      <a href="https://www.nerdfonts.com/cheat-sheet">Icon finder</a>
+      <a class="button" href="validation.html" aria-current="page">Validate fonts</a>
+      <button type="button" data-theme-toggle>Switch theme</button>
+    </nav>
+  </header>
+  <main id="main" class="validator-main">
+    <div class="retro-only retro-banner" aria-label="Retro welcome banner">
+      <img data-retro-image src="images/retro-disk.png" width="64" height="64" alt="Pixel-art floppy disk">
+      <div class="marquee-window"><span class="marquee-text">Welcome to the glyph inspection department!!! Your fonts stay on your computer.</span></div>
+    </div>
+    <div class="retro-only motion-control"><button type="button" data-motion-toggle>Pause retro animations</button></div>
+    <div class="tool-intro">
+      <h1>Validate your fonts</h1>
+      <p>Compare icon glyphs, box drawing, blocks, sextants, octants, and character advances side by side. Choose local TTF or OTF files. Your browser reads them locally; they are not uploaded.</p>
+    </div>
+
+    <section class="panel">
+      <h2>Choose the font files you want to compare</h2>
+      <p>Use <strong>Browse</strong> to select one or more patched TTF/OTF files, such as files under <code>patched/</code>. Choose faces that you want to compare (for example regular and Forced). Each comparison column is labeled using the selected filename; labels are not editable.</p>
+      <p class="help">Select multiple files in the file picker with Ctrl-click or Shift-click (Cmd-click on macOS). You can add more files later; each selected face appears beside the others.</p>
+    </section>
+    <section class="panel notice">
+      <h2>How to read these checks</h2>
+      <p><strong>Look first for the actual shapes.</strong> A blank, replacement box, or obviously different style can mean the selected font lacks that character or the browser silently used a fallback font. Browser APIs cannot reliably inspect a font’s full character map, so the visual sheet is a practical check, not a formal cmap audit.</p>
+      <p><strong>Width is measured in browser pixels.</strong> Equal advances show that these characters take the same horizontal space in this browser. They do not guarantee the terminal counts a Unicode character as one cell. Terminal fallback, Unicode width tables, and rendering can differ; verify the final result in your terminal too.</p>
+    </section>
+    <section class="controls" aria-label="Validation controls">
+      <label class="control">Font files <input id="fontFiles" type="file" accept=".ttf,.otf,font/ttf,font/otf" multiple><span class="help">Browse for patched font faces. No manual font names or labels.</span></label>
+      <label class="control">Preview size <select id="fontSize"><option value="12" selected>12 pt</option><option value="16">16 pt</option><option value="18">18 pt</option><option value="24">24 pt</option><option value="32">32 pt</option><option value="40">40 pt</option></select><span class="help">Resizes glyphs, diagram text, ANSI art, and measurement samples. 12 pt = 16 browser pixels.</span></label>
+      <label class="control">ANSI artwork <select id="ansiArtwork"><option value="workbench">Font workbench diagram</option><option value="EO-DEM1.ANS">El Guapo — demesne</option><option value="EO-VOS.ANS">El Guapo — Visions of Sacrifice</option><option value="EO-CHEM1.ANS">El Guapo — Chemical Hill</option></select><span class="help">Archive samples use 80 columns and CP437 characters. Chemical Hill contains explicit language.</span></label>
+      <button id="clearFonts" type="button">Clear selected fonts</button>
+    </section>
+    <p id="loadStatus" role="status" aria-live="polite"></p>
+    <div class="font-list" id="fontList" tabindex="0" role="region" aria-label="Font comparison results. Scroll horizontally to see more selected fonts."><div class="empty-state">No fonts selected yet. Browse for one or more TTF/OTF files to start the side by side comparison.</div></div>
+    <p><a href="samples/font-workbench.ans" download>Download the ANSI test diagram</a> for your terminal. It uses RGB colors and supplemental block characters; font fallback and terminal Unicode support can affect the result.</p>
+    <p class="footer-note">Coverage note: for an exact cmap comparison against a Nerd Fonts release, use <code>scripts/show_font_glyphs.py</code> with that release’s <code>glyphnames.json</code>. This page complements that check by showing how the glyphs look and how their advances compare in a browser.</p>
+  </main>
+  <footer class="site-footer"><span>vt/nerdified-fonts</span><div><a href="index.html">Font workbench</a><a href="https://github.com/voltaire-toledo/nerdified-fonts">Source code</a><a href="https://github.com/ryanoasis/nerd-fonts">Upstream Nerd Fonts</a></div></footer>
+  <script src="ansi-sample.js"></script>
+  <script src="ansi-gallery.js"></script>
+  <script src="validation.js"></script>
+</body>
+</html>

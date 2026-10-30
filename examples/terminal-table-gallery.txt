@@ -1,0 +1,71 @@
+UNICODE BOX DRAWING AND TERMINAL LAYOUT SAMPLE
+Open this file in a terminal using the patched font you want to check.
+
+1. SINGLE-LINE TABLE: every vertical stroke should stay in the same column
+
+┌──────────────┬──────────────────────┬──────────┐
+│ COMPONENT    │ STATUS               │ VERSION  │
+├──────────────┼──────────────────────┼──────────┤
+│ font-patcher │ ✓ complete           │ 3.5.1    │
+│ fontforge    │ ✓ font written       │ 4.26.0   │
+│ glyph map    │ ! compare your build │ 10617    │
+└──────────────┴──────────────────────┴──────────┘
+
+2. DOUBLE-LINE FRAME WITH CROSSED INTERNAL DIVIDERS
+
+╔══════════════════╦══════════════════════════════════╗
+║ SOURCE FONT      ║ PATCH RESULT                     ║
+╠══════════════════╬══════════════════════════════════╣
+║ JuliaMono        ║ JuliaMono Nerd Font              ║
+║                  ║ ┌──────────┬──────────┐          ║
+║                  ║ │ regular  │ forced   │          ║
+║                  ║ ├──────────┼──────────┤          ║
+║                  ║ │ careful  │ replace  │          ║
+║                  ║ └──────────┴──────────┘          ║
+╚══════════════════╩══════════════════════════════════╝
+
+3. MIXED SINGLE AND DOUBLE BORDERS
+
+╒══════════════════╤══════════════════╕
+│ PATCH MODE       │ EFFECT           │
+╞══════════════════╪══════════════════╡
+│ auto             │ one-cell icons   │
+├──────────────────┼──────────────────┤
+│ forced           │ may overhang     │
+╘══════════════════╧══════════════════╛
+
+4. TREE / FLOW DIAGRAM: junctions and arrows should connect cleanly
+
+                 ┌──────────────┐
+                 │ fontsrc/     │
+                 └──────┬───────┘
+                        │
+          ┌─────────────┴─────────────┐
+          ▼                           ▼
+   ┌──────────────┐             ┌──────────────┐
+   │ TTF face     │             │ OTF face     │
+   └──────┬───────┘             └──────┬───────┘
+          └─────────────┬──────────────┘
+                        ▼
+                 ┌──────────────┐
+                 │ patched/     │ ──────▶ releases/*.zip
+                 └──────────────┘
+
+5. HALF, QUARTER, SEXTANT, AND FULL BLOCKS
+
+Upper:      ▀▀▀▀▀▀▀▀    Lower:      ▄▄▄▄▄▄▄▄
+Left:       ▌▌▌▌▌▌▌▌    Right:      ▐▐▐▐▐▐▐▐
+Quadrants:  ▛▜▙▟▚▞      Fill:       ░░▒▒▓▓██
+Sextants:   🬀🬎🬝🭇🭚      Octants:    𜷡𜺨🮅
+
+6. REPEAT THIS 0123456789 BELOW EACH BORDER
+
+┌────────────┬────────────┬────────────┬────────────┐
+│ 0123456789 │ 0123456789 │ 0123456789 │ 0123456789 │
+├────────────┼────────────┼────────────┼────────────┤
+│ abcdefghij │ klmnopqrst │ uvwxyzABCD │ EFGHIJKLMN │
+└────────────┴────────────┴────────────┴────────────┘
+
+If vertical edges or intersections drift, check the source font's glyph
+advances and your terminal's font fallback. The glyph sheet checks mappings;
+this gallery checks how the terminal actually renders them.

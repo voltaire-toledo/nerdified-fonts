@@ -19,7 +19,7 @@ if not api:
     raise SystemExit('Set RELEASE_API_URL for Forgejo, e.g. https://forge.example/api/v1')
 base = f'{api.rstrip("/")}/repos/{repo}/releases'
 tag = f'v{version}'
-headers = {'Authorization': f'Bearer {token}', 'Accept': 'application/json', 'User-Agent': 'VT-NerdFonts'}
+headers = {'Authorization': f'Bearer {token}', 'Accept': 'application/json', 'User-Agent': 'Nerdified-Fonts'}
 
 def request(url, method='GET', payload=None, content_type='application/json'):
     h = dict(headers)

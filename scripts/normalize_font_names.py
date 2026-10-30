@@ -29,11 +29,10 @@ def best_name(font: TTFont, name_ids: tuple[int, ...]) -> str:
 
 def derive_family(source: TTFont, mode: str) -> str:
     base = best_name(source, (16, 1))
-    if mode in {"forced", "forced-mono"}:
-        return f"{base}Forced Nerd Font"
-    # The project deliberately gives each variant its own output directory;
-    # JuliaMono's family name already identifies the monospaced design.
-    return f"{base} Nerd Font"
+    suffix = "NFM" if mode in {"mono", "forced-mono"} else "NF"
+    policy = " Forced" if mode in {"forced", "forced-mono"} else ""
+    return f"{base}{policy} {suffix}"
+
 
 
 def set_name(font: TTFont, family: str, style: str) -> None:
@@ -69,6 +68,7 @@ def main() -> None:
     parser.add_argument("--source", required=True, type=Path, help="Clean source TTF for family and style")
     parser.add_argument("--mode", required=True, choices=("normal", "mono", "forced", "forced-mono"))
     parser.add_argument("--family-name", help="Explicit display family name; overrides the mode-derived name")
+    parser.add_argument("--rename-file", action="store_true", help="Use abbreviated family and style in the output filename")
     args = parser.parse_args()
 
     patched = TTFont(args.font)
@@ -76,8 +76,17 @@ def main() -> None:
     family = args.family_name or derive_family(source, args.mode)
     style = best_name(source, (17, 2))
     set_name(patched, family, style)
-    patched.save(args.font)
-    print(f"{args.font}: {family} | {style}")
+    destination = args.font
+    if args.rename_file:
+        filename_family = re.sub(r"[^A-Za-z0-9]", "", family)
+        filename_style = re.sub(r"[^A-Za-z0-9]", "", style)
+        destination = args.font.with_name(f"{filename_family}-{filename_style}{args.font.suffix}")
+    patched.save(destination)
+    patched.close()
+    source.close()
+    if destination != args.font:
+        args.font.unlink()
+    print(f"{destination}: {family} | {style}")
 
 
 if __name__ == "__main__":

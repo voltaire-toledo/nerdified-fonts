@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Four dark visual prototypes for the Nerd Fonts patch workflow.">
+  <title>Nerd Fonts dark prototypes</title>
+  <style>
+    :root { color-scheme: dark; --page: #20242b; --panel: #282e37; --ink: #f0eee7; --muted: #a8acb2; --rule: #4a515b; --yellow: #e3b83f; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--page); color: var(--ink); font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    main { width: min(900px, calc(100% - 2rem)); margin: 0 auto; padding: 4rem 0; }
+    h1 { max-width: 12ch; margin: 0; font-size: clamp(3rem, 8vw, 6rem); letter-spacing: -.07em; line-height: .95; }
+    p { max-width: 58ch; color: var(--muted); }
+    a { color: var(--yellow); text-underline-offset: .2em; }
+    a:focus-visible { outline: 3px solid var(--yellow); outline-offset: 4px; }
+    .eyebrow { color: var(--yellow); font: .76rem/1.4 ui-monospace, monospace; }
+    .primary { display: inline-block; margin: 1rem 0 2rem; padding: .8rem 1rem; background: var(--yellow); color: #211e16; font-weight: 700; text-decoration: none; }
+    ul { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0 2rem; padding: 0; list-style: none; border-top: 1px solid var(--rule); }
+    li { padding: 1rem 0; border-bottom: 1px solid var(--rule); }
+    li a { display: block; color: var(--ink); font-size: 1.15rem; font-weight: 650; text-decoration: none; }
+    li span { color: var(--muted); font-size: .85rem; }
+    @media (max-width: 580px) { ul { grid-template-columns: 1fr; } main { padding-top: 2.5rem; } }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">VT / NERDIFIED FONTS</p>
+    <h1>Four dark design studies.</h1>
+    <p>Each page shows Nerd Fonts through a different layout. Headings use sans serif. The shared palette uses graphite, marigold, burnt yellow, and restrained blue.</p>
+    <a class="primary" href="dark-set/index.html">Compare all four side by side</a>
+    <ul>
+      <li><a href="dark-set/merge-room.html">Merge Room</a><span>Editorial type, Git Merge inspired</span></li>
+      <li><a href="dark-set/motion-study.html">Motion Study</a><span>Open layout, Motion inspired</span></li>
+      <li><a href="dark-set/jules-monitor.html">Jules Monitor</a><span>Before-and-after monitor view and three build steps</span></li>
+      <li><a href="dark-set/build-trace.html">Build Trace</a><span>Linear font patch workflow</span></li>
+    </ul>
+  </main>
+</body>
+</html>
