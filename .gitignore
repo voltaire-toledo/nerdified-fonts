@@ -10,3 +10,11 @@ __pycache__/
 # Generated patched fonts and one ZIP per font family.
 patched/
 releases/
+
+# YABA Scaffold exceptions
+!AGENTS.md
+!.ai/**
+!.agents/**
+!.claude/**
+!backlog.config.yml
+

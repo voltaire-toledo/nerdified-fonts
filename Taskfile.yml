@@ -1,0 +1,72 @@
+version: '3'
+
+tasks:
+  default:
+    desc: List available project-template tasks.
+    cmds:
+      - task --list
+    silent: true
+
+  preflight:
+    desc: "Precheck all required tools and runtimes needed for YABA and project."
+    cmds:
+      - cmd: pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/precheck-tools.ps1
+
+  bootstrap:
+    desc: "Create a fresh Git-backed project from this template. Usage: task bootstrap DESTINATION=... REMOTE_URL=... [PROJECT_NAME=...]"
+    deps: [preflight]
+    requires:
+      vars:
+        - REMOTE_URL
+    cmds:
+      - cmd: pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/bootstrap-new-project.ps1 -Destination '{{.DESTINATION | default ""}}' -ProjectName '{{.PROJECT_NAME | default ""}}' -RemoteUrl '{{.REMOTE_URL}}' -DestinationRoot '{{.DESTINATION_ROOT | default ""}}'
+
+  rtk:init:
+    desc: "Initialize RTK token-saving rules for the assistant (generates RTK.md)."
+    cmds:
+      - cmd: rtk init --codex
+
+  backlog:init:
+    desc: "Initialize a fresh Backlog workspace with safe Git-aware defaults."
+    cmds:
+      - cmd: backlog init {{.PROJECT_NAME | default "project"}} --defaults --backlog-dir .ai/.backlog --config-location root --integration-mode none
+
+  verify-bootstrap:
+    desc: Require project context, PRD, and SPECS to be completed after bootstrap.
+    cmds:
+      - cmd: pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/verify-agent-scaffold.ps1 -RequireBootstrap
+
+  verify-template:
+    desc: Verify template structure while allowing intentional bootstrap placeholders.
+    cmds:
+      - cmd: pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/verify-agent-scaffold.ps1
+
+  skills:sync:
+    desc: Regenerate the Claude Code skill mirror (.claude/skills) from .agents/skills.
+    cmds:
+      - cmd: pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/sync-skills.ps1
+
+  skills:check:
+    desc: Fail if .claude/skills has drifted from .agents/skills.
+    cmds:
+      - cmd: pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/sync-skills.ps1 -Check
+
+  backlog:seed:
+    desc: Create the default project setup tasks in a fresh backlog (skipped when tasks exist).
+    cmds:
+      - cmd: pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/seed-backlog.ps1
+
+  next:
+    desc: Show the active and next unblocked backlog tasks.
+    cmds:
+      - cmd: backlog task list --plain
+
+  status:
+    desc: Output a formatted terminal summary of the project backlog.
+    cmds:
+      - cmd: backlog task list
+
+  doctor:
+    desc: Run backlog integrity diagnostics to check for collisions and schema errors.
+    cmds:
+      - cmd: backlog doctor
